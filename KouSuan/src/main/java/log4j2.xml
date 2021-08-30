@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!-- status log4j2内部日志级别 -->
+<!-- 参考： https://www.jianshu.com/p/144698aed81c -->
+<configuration xmlns:xi="http://www.w3.org/2001/XInclude" status="off">
+
+	<!-- 全局参数 -->
+	<Properties>
+		<!-- 引用布局参数 -->
+		<xi:include href="log4j2_prop.xml" />
+		<xi:include href="log4j2_prop_file.xml" />
+
+		<Property name="displayName">KouSuan_log4j2</Property>
+		<Property name="dir">log</Property>
+		<Property name="fileNameBegin">${dir}/${displayName}</Property>
+	</Properties>
+	<Appenders>
+		<Console name="console" target="SYSTEM_OUT" follow="true">
+			<PatternLayout>
+				<pattern>${pattern}</pattern>
+			</PatternLayout>
+		</Console>
+		<!-- 文件 每次运行程序会自动清空，由append属性决定 -->
+		<File name="error" fileName="${fileNameBegin}_error.log" append="false">
+			<!-- 指定error 级别的日志 -->
+			<ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout>
+				<pattern>${patternFile}</pattern>
+			</PatternLayout>
+		</File>
+		<File name="debug" fileName="${fileNameBegin}_debug.log" append="false">
+			<!-- 指定debug 级别的日志 -->
+			<ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+			<PatternLayout>
+				<pattern>${patternFile}</pattern>
+			</PatternLayout>
+		</File>
+		<!-- 滚动文件 -->
+		<RollingFile name="rollingFile" fileName="${fileNameBegin}.log"
+			filePattern="${fileNameBegin}_%d{yyyy-MM-dd}.log">
+			<PatternLayout>
+				<pattern>${patternFile}</pattern>
+			</PatternLayout>
+			<!-- 按大小划分 -->
+			<SizeBasedTriggeringPolicy size="50 MB" />
+		</RollingFile>
+	</Appenders>
+	<Loggers>
+		<Root level="INFO">
+			<AppenderRef ref="console"></AppenderRef>
+			<AppenderRef ref="error"></AppenderRef>
+			<AppenderRef ref="debug"></AppenderRef>
+			<AppenderRef ref="rollingFile"></AppenderRef>
+		</Root>
+	</Loggers>
+</configuration>
